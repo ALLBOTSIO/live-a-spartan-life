@@ -1,0 +1,236 @@
+@import 'tailwindcss';
+
+/* ------------------------------------------------------------------
+   Live a Spartan Life — design tokens
+   Source of truth: design_handoff_live_a_spartan_life/README.md
+   Hard corners and no shadows are brand rules. Do not add either.
+------------------------------------------------------------------ */
+
+@theme {
+  /* Color */
+  --color-red: #b22222;
+  --color-red-hover: #8e1b1b;
+  --color-gold: #d6a529;
+  --color-carbon: #0b0c0c;
+  --color-charcoal: #16191b;
+  --color-charcoal-hover: #1c2023;
+  --color-hairline: #24282a;
+  --color-input-border: #33383b;
+  --color-iron: #62686c;
+  --color-steel: #9da3a6;
+  --color-bone: #e9e5dc;
+  --color-bone-hairline: #c9c4b7;
+  --color-bone-muted: #8a8577;
+  --color-body-on-bone: #4a4e51;
+
+  /* Apparel-only garment colorways (not for web UI) */
+  --color-field-olive: #3a3e33;
+  --color-heather-iron: #62686c;
+  --color-oxblood: #6e1a1a;
+  --color-leather: #6b5136;
+
+  /* Type */
+  --font-display: var(--font-anton), ui-sans-serif, sans-serif;
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+
+  /* Layout */
+  --spacing-page: 32px;
+  --container-content: 1280px;
+  --container-interior: 1100px;
+  --container-manifesto: 820px;
+  --container-start: 780px;
+
+  /* Brand rule: zero radius everywhere. */
+  --radius-none: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-full: 0px;
+
+  /* Brand rule: no shadows. Depth is hairlines and surface value shifts. */
+  --shadow-2xs: none;
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-xl: none;
+  --shadow-2xl: none;
+}
+
+/* shadcn/ui variable contract, mapped onto the brand palette so any component
+   added later with `npx shadcn add` inherits the system instead of fighting it. */
+:root {
+  --background: var(--color-carbon);
+  --foreground: var(--color-bone);
+  --card: var(--color-charcoal);
+  --card-foreground: var(--color-bone);
+  --popover: var(--color-charcoal);
+  --popover-foreground: var(--color-bone);
+  --primary: var(--color-red);
+  --primary-foreground: var(--color-bone);
+  --secondary: var(--color-charcoal);
+  --secondary-foreground: var(--color-bone);
+  --muted: var(--color-charcoal);
+  --muted-foreground: var(--color-steel);
+  --accent: var(--color-gold);
+  --accent-foreground: var(--color-carbon);
+  --destructive: var(--color-red);
+  --destructive-foreground: var(--color-bone);
+  --border: var(--color-hairline);
+  --input: var(--color-input-border);
+  --ring: var(--color-gold);
+  --radius: 0px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    border-color: var(--color-hairline);
+  }
+
+  html {
+    background: var(--color-carbon);
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-carbon);
+    color: var(--color-bone);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Never leave browser-default blue. */
+  a {
+    color: var(--color-bone);
+    text-decoration: none;
+  }
+
+  ::selection {
+    background: var(--color-red);
+    color: var(--color-bone);
+  }
+
+  /* Visible, on-brand focus. Keyboard users get a gold hairline, never a glow. */
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+  }
+
+  input,
+  textarea,
+  select,
+  button {
+    font-family: inherit;
+    border-radius: 0;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-iron);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Tracked-out uppercase utility type. Never below 10px, never for sentences. */
+  .mono-label {
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+
+  /**
+   * Hero 1a layout.
+   *
+   * Mobile source order is type -> image -> CTAs (per the 390px design), while
+   * desktop needs both type blocks stacked in the left column beside a single
+   * full-height image. Named grid areas do that without duplicating the image
+   * in the DOM.
+   */
+  .hero-grid {
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media (min-width: 1024px) {
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      grid-template-areas:
+        'top image'
+        'bottom image';
+      grid-template-rows: auto auto;
+      align-items: center;
+      column-gap: 64px;
+    }
+    .hero-top {
+      grid-area: top;
+      align-self: end;
+    }
+    .hero-bottom {
+      grid-area: bottom;
+      align-self: start;
+    }
+    .hero-image {
+      grid-area: image;
+    }
+  }
+
+  /* Skip link — visible only on keyboard focus. */
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+  }
+  .skip-link:focus {
+    left: 8px;
+    top: 8px;
+    background: var(--color-red);
+    color: var(--color-bone);
+    padding: 12px 20px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+  }
+}
