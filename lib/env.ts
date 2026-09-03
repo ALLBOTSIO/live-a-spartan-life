@@ -16,26 +16,48 @@ import { z } from 'zod'
 const PRODUCTION_SITE_URL = 'https://www.liveaspartanlife.com'
 
 /**
+ * Check if a URL is localhost (the likely misconfig that caused the original bug).
+ */
+function isLocalhostUrl(url: string): boolean {
+  return url.includes('localhost') || url.includes('127.0.0.1')
+}
+
+/**
  * Infer the site URL with production-first logic.
  * 
  * Priority:
- * 1. Explicit NEXT_PUBLIC_SITE_URL (for overrides/staging)
+ * 1. Explicit NEXT_PUBLIC_SITE_URL (unless it's localhost in production)
  * 2. Production canonical URL when VERCEL_ENV is production
  * 3. Vercel preview URL for branch deploys
  * 4. Localhost for local development
+ * 
+ * Hardening: If NEXT_PUBLIC_SITE_URL is set to localhost/127.0.0.1 in production,
+ * treat it as unset and use the canonical URL. This prevents misconfigurations
+ * from leaking localhost URLs into production robots.txt and sitemap.xml.
  */
 function inferSiteUrl(): string {
-  if (process.env.NEXT_PUBLIC_SITE_URL) {
-    return process.env.NEXT_PUBLIC_SITE_URL
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL
+  
+  // If explicitly set to a non-localhost URL, use it
+  if (explicit && !isLocalhostUrl(explicit)) {
+    return explicit
   }
-  // Production builds always use canonical URL unless overridden
+  
+  // Production builds use canonical URL (even if env is set to localhost)
   if (process.env.VERCEL_ENV === 'production') {
     return PRODUCTION_SITE_URL
   }
+  
+  // If localhost was set explicitly in non-production, honor it
+  if (explicit) {
+    return explicit
+  }
+  
   // Preview/branch deploys use Vercel-provided URL
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}`
   }
+  
   // Local development
   return 'http://localhost:3000'
 }
