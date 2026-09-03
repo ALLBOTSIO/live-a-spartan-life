@@ -19,19 +19,35 @@
 ### Recent Fixes (3 Sep 2026)
 
 #### Critical Crawl Issues Resolved
-1. **robots.txt localhost bug** — Production was shipping `Sitemap: http://localhost:3000/sitemap.xml`. Fixed by inferring site URL from Vercel's `VERCEL_URL` environment variable when `NEXT_PUBLIC_SITE_URL` is not explicitly set.
+1. **robots.txt localhost bug** — Production was shipping `Sitemap: http://localhost:3000/sitemap.xml`. Fixed with production-first logic that hardcodes the canonical URL (`https://www.liveaspartanlife.com`) when `VERCEL_ENV=production`, regardless of whether `NEXT_PUBLIC_SITE_URL` is set.
 
-2. **sitemap.xml 500 errors** — Added defensive error handling to prevent sitemap generation failures from crashing the route. Articles that fail to load are logged but don't block the static routes from appearing.
+2. **sitemap.xml localhost URLs** — Every `<loc>` was `http://localhost:3000/...` even in production. Fixed by using the same production-first URL logic throughout robots.ts, sitemap.ts, and metadataBase.
 
-3. **Content-Type headers** — Next.js metadata routes automatically set correct headers (`text/plain` for robots.txt, `application/xml` for sitemap.xml).
+3. **sitemap.xml 500 errors** — Added defensive error handling to prevent sitemap generation failures from crashing the route. Articles that fail to load are logged but don't block the static routes from appearing.
+
+4. **Content-Type headers** — Next.js metadata routes automatically set correct headers (`text/plain` for robots.txt, `application/xml` for sitemap.xml).
 
 ### Environment Configuration
 
-The site uses `NEXT_PUBLIC_SITE_URL` for canonical URLs, Open Graph tags, sitemap generation, and Stripe redirects. When this variable is not set:
-- **Production (Vercel):** Automatically uses `https://{VERCEL_URL}`
-- **Development:** Falls back to `http://localhost:3000`
+The site uses production-first URL logic with the canonical URL (`https://www.liveaspartanlife.com`) hardcoded for production builds:
 
-For custom domains, set `NEXT_PUBLIC_SITE_URL=https://www.liveaspartanlife.com` in Vercel environment variables to override the automatic inference.
+- **Production (Vercel):** Uses `https://www.liveaspartanlife.com` when `VERCEL_ENV=production`
+- **Preview deploys:** Uses `https://{VERCEL_URL}` for branch/PR previews
+- **Development:** Falls back to `http://localhost:3000`
+- **Override:** Set `NEXT_PUBLIC_SITE_URL` in Vercel to override this logic for staging or testing
+
+#### Post-Merge Actions
+
+After merging this PR, Vercel may serve cached versions of robots.txt and sitemap.xml showing the old localhost URLs. To ensure immediate propagation:
+
+1. **Verify deployment** completes successfully
+2. **Check robots.txt** at `https://www.liveaspartanlife.com/robots.txt`
+3. **Check sitemap.xml** at `https://www.liveaspartanlife.com/sitemap.xml`
+4. **If still showing localhost:**
+   - In Vercel dashboard → Deployments → Current production → "⋯" menu → **Redeploy**
+   - Or purge edge cache: `curl -X PURGE https://www.liveaspartanlife.com/robots.txt` and `curl -X PURGE https://www.liveaspartanlife.com/sitemap.xml`
+   - Or set `NEXT_PUBLIC_SITE_URL=https://www.liveaspartanlife.com` in Vercel environment variables (Production scope) and trigger a new production deployment
+5. **Submit to Google Search Console** once verified correct
 
 ### Integration Status
 

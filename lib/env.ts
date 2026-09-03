@@ -10,16 +10,33 @@ import { z } from 'zod'
  */
 
 /**
- * Infer the production site URL when NEXT_PUBLIC_SITE_URL is not set.
- * Vercel sets VERCEL_URL automatically on every deployment.
+ * Production canonical URL for liveaspartanlife.com.
+ * Used as fallback when NEXT_PUBLIC_SITE_URL is not explicitly set.
+ */
+const PRODUCTION_SITE_URL = 'https://www.liveaspartanlife.com'
+
+/**
+ * Infer the site URL with production-first logic.
+ * 
+ * Priority:
+ * 1. Explicit NEXT_PUBLIC_SITE_URL (for overrides/staging)
+ * 2. Production canonical URL when VERCEL_ENV is production
+ * 3. Vercel preview URL for branch deploys
+ * 4. Localhost for local development
  */
 function inferSiteUrl(): string {
   if (process.env.NEXT_PUBLIC_SITE_URL) {
     return process.env.NEXT_PUBLIC_SITE_URL
   }
+  // Production builds always use canonical URL unless overridden
+  if (process.env.VERCEL_ENV === 'production') {
+    return PRODUCTION_SITE_URL
+  }
+  // Preview/branch deploys use Vercel-provided URL
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}`
   }
+  // Local development
   return 'http://localhost:3000'
 }
 
@@ -73,3 +90,11 @@ export const isSupabaseConfigured = Boolean(
 )
 export const isStripeConfigured = Boolean(env.STRIPE_SECRET_KEY && env.STRIPE_BROTHERHOOD_PRICE_ID)
 export const isResendConfigured = Boolean(env.RESEND_API_KEY)
+
+/**
+ * Get the canonical site URL for robots.txt, sitemap.xml, and metadataBase.
+ * Always returns production URL in production builds, even if env is misconfigured.
+ */
+export function getSiteUrl(): string {
+  return env.NEXT_PUBLIC_SITE_URL
+}
