@@ -3,7 +3,7 @@ import { Anton, IBM_Plex_Mono, Manrope } from 'next/font/google'
 
 import { Scanline } from '@/components/site/scanline'
 import { AnalyticsProvider } from '@/components/analytics-provider'
-import { env } from '@/lib/env'
+import { getSiteUrl } from '@/lib/env'
 import { site } from '@/lib/content/site'
 
 import './globals.css'
@@ -30,7 +30,7 @@ const plexMono = IBM_Plex_Mono({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
+  metadataBase: new URL(getSiteUrl()),
   title: {
     default: `${site.name} — ${site.tagline}`,
     template: `%s — ${site.name}`,

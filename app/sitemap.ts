@@ -2,11 +2,17 @@ import type { MetadataRoute } from 'next'
 
 import { getArticles } from '@/lib/content/articles'
 import { pillarRoutes } from '@/lib/content/pillars'
-import { env } from '@/lib/env'
+import { getSiteUrl } from '@/lib/env'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, '')
-  const articles = await getArticles()
+  const base = getSiteUrl().replace(/\/$/, '')
+
+  let articles: Awaited<ReturnType<typeof getArticles>> = []
+  try {
+    articles = await getArticles()
+  } catch (error) {
+    console.error('Failed to load articles for sitemap:', error)
+  }
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${base}/`, priority: 1, changeFrequency: 'weekly' },
