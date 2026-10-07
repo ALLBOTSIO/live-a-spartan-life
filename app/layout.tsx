@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Anton, IBM_Plex_Mono, Manrope } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/next'
 
 import { Scanline } from '@/components/site/scanline'
 import { AnalyticsProvider } from '@/components/analytics-provider'
@@ -69,6 +70,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </a>
           {children}
         </AnalyticsProvider>
+        <Analytics />
       </body>
     </html>
   )
