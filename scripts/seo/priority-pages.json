@@ -1,0 +1,15 @@
+{
+  "$comment": "Priority pages for launch indexing (gate G21). Paths only — the base URL is supplied at run time. Order is submission order. Keep in step with app/sitemap.ts.",
+  "pages": [
+    { "path": "/", "reason": "Homepage — brand entry point" },
+    { "path": "/start", "reason": "Primary conversion — free starter signup" },
+    { "path": "/brotherhood", "reason": "Paid offer — $24/mo membership" },
+    { "path": "/code", "reason": "The five-pillar code overview" },
+    { "path": "/train", "reason": "Pillar page" },
+    { "path": "/fuel", "reason": "Pillar page" },
+    { "path": "/mind", "reason": "Pillar page" },
+    { "path": "/provide", "reason": "Pillar page" },
+    { "path": "/field-notes", "reason": "Journal hub — links every article" },
+    { "path": "/about", "reason": "Founder / E-E-A-T page" }
+  ]
+}
