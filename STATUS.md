@@ -67,7 +67,7 @@ After merging this PR, Vercel may serve cached versions of robots.txt and sitema
 ## Next Steps
 
 1. Verify robots.txt and sitemap.xml are serving correct production URLs post-deployment
-2. Submit updated sitemap to Google Search Console
+2. Submit updated sitemap to Google Search Console and request indexing for priority pages — runbook and evidence log in `docs/seo/INDEXING.md` (gate G21, not yet complete)
 3. Replace any remaining placeholder images with final assets
 4. Monitor crawl status in Google Search Console
 
